@@ -25,11 +25,18 @@ class ProductManager {
         }
     }
 
+    validate(title, description, price, thumbnail, code, stock) {
+        if (!title || !description || !price || !thumbnail || !code || !stock) {
+            throw new Error("Todos los campos son obligatorios.");
+        }
+        if (this.products.some(product => product.code === code)) {
+            throw new Error("El código del producto ya está en uso.");
+        }
+    }
+
     async addProduct({ title, description, price, thumbnail, code, stock }) {
         try {
-            if (this.products.some(p => p.code === code)) {
-                throw new Error("El código del producto ya está en uso.");
-            }
+            this.validate(title, description, price, thumbnail, code, stock);
             const id = this.generateUniqueId();
             const product = {
                 id,
@@ -118,6 +125,7 @@ try {
 }
 
 const productId = productManager.getProducts()[0].id;
+
 try {
     const foundProduct = productManager.getProductById(productId);
     console.log("Producto encontrado por ID:", foundProduct);
